@@ -1,30 +1,50 @@
 import 'package:flutter/material.dart';
+import 'constants.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(DocWithEyes());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
+class DocWithEyes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'hands free pdf viewer',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+      theme: ThemeData.light().copyWith(
+        primaryColor: cPrimaryColor,
+        scaffoldBackgroundColor: cBackgroundColor,
       ),
-      home: const MyHomePage(title: 'hands free pdf viewer'),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'DocWithEyes',
+            style: tTitleTextStyle,
+          ),
+          backgroundColor: cBackgroundColor,
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Container(
+                child: ElevatedButton(
+                  onPressed: () {},
+                  child: Text(
+                    "START",
+                    style: TextStyle(
+                      fontSize: 50.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    primary: cPointColor,
+                  ),
+                ),
+                padding: EdgeInsets.all(40),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
