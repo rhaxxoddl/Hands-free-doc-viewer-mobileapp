@@ -1,3 +1,4 @@
+import 'package:document_viewer_m_app/page/fileListPage.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
 
@@ -7,7 +8,10 @@ class StartButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => FileListPage()));
+      },
       child: Text(
         "START",
         style: TextStyle(
