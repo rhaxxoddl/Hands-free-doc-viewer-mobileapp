@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import '../page/pdfViewPage.dart';
 
 class SelectFileButton extends StatelessWidget {
   const SelectFileButton({Key? key}) : super(key: key);
@@ -13,8 +14,14 @@ class SelectFileButton extends StatelessWidget {
             allowedExtensions: ['pdf'],
           );
           if (result != null && result.files.isNotEmpty) {
-            String fileName = result.files.first.name;
-            debugPrint(fileName);
+            String? targetFilePath = result.files.first.path;
+            if (targetFilePath != null) {
+              debugPrint('Debug file name: ${targetFilePath}');
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => PdfViewPage(targetFilePath)));
+            }
           }
         },
         child: Row(
