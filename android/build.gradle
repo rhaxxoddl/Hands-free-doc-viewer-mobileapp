@@ -1,3 +1,6 @@
+//ext {
+//    ndkVersion = flutter.ndkVersion
+//}
 buildscript {
     ext.kotlin_version = '1.7.20'
     repositories {
