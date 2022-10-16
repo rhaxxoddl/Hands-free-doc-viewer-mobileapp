@@ -4,11 +4,21 @@ import camp.visual.gazetracker.callback.GazeTrackerCallback;
 import camp.visual.gazetracker.constant.UserStatusOption;
 import camp.visual.gazetracker.gaze.GazeInfo;
 import camp.visual.gazetracker.state.ScreenState;
+import camp.visual.libgaze.calibration.CalibrationHelper;
+import camp.visual.libgaze.camera.DeviceMeta;
 import io.flutter.embedding.android.FlutterActivity;
+
+import android.app.Activity;
+import android.graphics.Point;
+import android.hardware.camera2.params.MeteringRectangle;
 import android.os.Bundle;
 
 import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
+import java.util.Map;
+import java.util.Objects;
 
 // SeeSo Imports
 import camp.visual.gazetracker.GazeTracker;
@@ -25,21 +35,62 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Display;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 
 public class MainActivity extends FlutterActivity {
+    // Method Channel===========================================================
     private static final String mChannel = "gazeTracker";
+    private MethodChannel channel;
+
+    @Override
+    public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
+        GeneratedPluginRegistrant.registerWith(flutterEngine);
+        super.configureFlutterEngine(flutterEngine);
+
+        channel = new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), mChannel);
+
+        channel.setMethodCallHandler(
+                (call, result) -> {
+                    if (call.method.equals("initGaze")) {
+                        initGaze();
+                    }
+                    else {
+                        result.notImplemented();
+                    }
+                }
+        );
+    }
+    // Method Channel^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    // Event Channel======================================================================
+    public static final String mStream = "com.example.document_viewer_m_app/eventChannel";
+    private EventChannel.EventSink attachEvent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FlutterEngine flutterEngine = new FlutterEngine(this);
-        GeneratedPluginRegistrant.registerWith(flutterEngine);;
+        new EventChannel(getFlutterEngine().getDartExecutor(), mStream).setStreamHandler(
+                new EventChannel.StreamHandler() {
+
+                    @Override
+                    public void onListen(Object arguments, EventChannel.EventSink events) {
+                        Log.w("Event Channel", "on listen");
+                        attachEvent = events;
+                        initGaze();
+                    }
+
+                    @Override
+                    public void onCancel(Object args) {
+                        attachEvent = null;
+                        releaseGaze();
+                    }
+                }
+        );
     }
-    private String leftPageEvent = "com.example.document_viewer_m_app/leftPageEvent";
-    private String rightPageEvent = "com.example.document_viewer_m_app/rightPageEvent";
+    // Event Channel^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     GazeTracker gazeTracker = null;
 
@@ -65,30 +116,33 @@ public class MainActivity extends FlutterActivity {
     };
 
     private void initSuccess(GazeTracker gazeTracker) {
-        Log.i("Debug", "Succese init gazeTracker!");
         this.gazeTracker = gazeTracker;
+        Log.i("Debug", "Succese init gazeTracker!");
         this.gazeTracker.setGazeCallback(gazeCallback);
+        Log.i("Debug", "Succese apply gazeCallback!");
         this.gazeTracker.startTracking();
+        Log.i("Debug", "Succese start tracking!");
     }
 
     private final OneEuroFilterManager oneEuroFilterManager = new OneEuroFilterManager(2);
 
     private final GazeCallback gazeCallback = new GazeCallback() {
+//        private Point deviceSize = new Point();
+//        Display display = getActivity().getWindowManager().getDefaultDisplay();
+
         @Override
         public void onGaze(GazeInfo gazeInfo) {
-            if (gazeInfo.screenState == ScreenState.INSIDE_OF_SCREEN)
+            Log.d("1", "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            System.out.println(gazeInfo.getClass().getName());
+            System.out.println(gazeInfo == null);
+            System.out.println(gazeInfo.screenState);
+            if (gazeInfo.screenState == ScreenState.INSIDE_OF_SCREEN){
                 Log.i("Eye coordinary", "x[" + gazeInfo.x + " ] y[" + gazeInfo.y+ "]");
+                float[] eyeCoordinary = {gazeInfo.x, gazeInfo.y};
+                Log.d("1", "#######");
+//                attachEvent.success(eyeCoordinary);
+            }
         }
-//        @Override
-//        public void onGaze(GazeInfo gazeInfo) {
-//            Log.i("SeeSo", "gaze coord " + gazeInfo.x + "x" + gazeInfo.y);
-//            if (oneEuroFilterManager.filterValues(gazeInfo.timestamp, gazeInfo.x, gazeInfo.y)) {
-//                float[] filteredValues = oneEuroFilterManager.getFilteredValues();
-//                float filteredX = filteredValues[0];
-//                float filteredY = filteredValues[1];
-//                Log.i("SeeSo", "gaze filterd coord " + filteredX + "x" + filteredY);
-//            }
-//        }
     };
 
     private void initFail(InitializationErrorType error) {
