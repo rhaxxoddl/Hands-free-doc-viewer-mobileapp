@@ -43,8 +43,11 @@ import androidx.core.content.ContextCompat;
 
 public class MainActivity extends FlutterActivity {
     // Method Channel===========================================================
-    private static final String mChannel = "gazeTracker";
+    private static final String mChannel = "com.example.document_viewer_m_app/gazeTracker";
     private MethodChannel channel;
+    protected float[] mEyeCoordinary = {0, 0};
+
+    public float[] getEyeCoordinary() { return mEyeCoordinary; }
 
     @Override
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
@@ -52,11 +55,16 @@ public class MainActivity extends FlutterActivity {
         super.configureFlutterEngine(flutterEngine);
 
         channel = new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), mChannel);
-
         channel.setMethodCallHandler(
                 (call, result) -> {
                     if (call.method.equals("initGaze")) {
                         initGaze();
+                    }
+                    else if (call.method.equals("releaseGaze")) {
+                        releaseGaze();
+                    }
+                    else if (call.method.equals("getEyeCoordinary")) {
+                        result.success(getEyeCoordinary());
                     }
                     else {
                         result.notImplemented();
@@ -65,32 +73,6 @@ public class MainActivity extends FlutterActivity {
         );
     }
     // Method Channel^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    // Event Channel======================================================================
-    public static final String mStream = "com.example.document_viewer_m_app/eventChannel";
-    private EventChannel.EventSink attachEvent;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        new EventChannel(getFlutterEngine().getDartExecutor(), mStream).setStreamHandler(
-                new EventChannel.StreamHandler() {
-
-                    @Override
-                    public void onListen(Object arguments, EventChannel.EventSink events) {
-                        Log.w("Event Channel", "on listen");
-                        attachEvent = events;
-                        initGaze();
-                    }
-
-                    @Override
-                    public void onCancel(Object args) {
-                        attachEvent = null;
-                        releaseGaze();
-                    }
-                }
-        );
-    }
-    // Event Channel^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     GazeTracker gazeTracker = null;
 
@@ -117,30 +99,24 @@ public class MainActivity extends FlutterActivity {
 
     private void initSuccess(GazeTracker gazeTracker) {
         this.gazeTracker = gazeTracker;
-        Log.i("Debug", "Succese init gazeTracker!");
         this.gazeTracker.setGazeCallback(gazeCallback);
-        Log.i("Debug", "Succese apply gazeCallback!");
         this.gazeTracker.startTracking();
-        Log.i("Debug", "Succese start tracking!");
     }
 
     private final OneEuroFilterManager oneEuroFilterManager = new OneEuroFilterManager(2);
 
     private final GazeCallback gazeCallback = new GazeCallback() {
-//        private Point deviceSize = new Point();
-//        Display display = getActivity().getWindowManager().getDefaultDisplay();
 
         @Override
         public void onGaze(GazeInfo gazeInfo) {
-            Log.d("1", "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
             System.out.println(gazeInfo.getClass().getName());
             System.out.println(gazeInfo == null);
             System.out.println(gazeInfo.screenState);
             if (gazeInfo.screenState == ScreenState.INSIDE_OF_SCREEN){
                 Log.i("Eye coordinary", "x[" + gazeInfo.x + " ] y[" + gazeInfo.y+ "]");
-                float[] eyeCoordinary = {gazeInfo.x, gazeInfo.y};
-                Log.d("1", "#######");
-//                attachEvent.success(eyeCoordinary);
+                mEyeCoordinary[0] = gazeInfo.x;
+                mEyeCoordinary[1] = gazeInfo.y;
+                Log.d("GazeCallback", "Success mEyeCoordinary");
             }
         }
     };

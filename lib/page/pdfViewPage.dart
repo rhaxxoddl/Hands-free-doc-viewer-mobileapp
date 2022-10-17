@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:native_pdf_view/native_pdf_view.dart';
@@ -18,36 +20,34 @@ class _PdfViewPageState extends State<PdfViewPage> {
   int _actualPageNumber = _initialPage;
   int _allPageCount = 0;
   bool isSampleDoc = true;
-  static const stream =
-      EventChannel("com.example.document_viewer_m_app/eventChannel");
-
-  late StreamSubscription _streamSubscription;
   _PdfViewPageState(this.targetFile);
 
-  void _startListener() {
-    _streamSubscription = stream.receiveBroadcastStream().listen(_listenStream);
-  }
-
-  void _cancelListener() {
-    _streamSubscription.cancel();
-  }
-
-  void _listenStream(value) {
-    debugPrint("Dart: [${value[0]}][${value[1]}]");
+  static const platform =
+      MethodChannel('com.example.document_viewer_m_app/gazeTracker');
+  Future<void> _checkEyePosition() async {
+    try {
+      final Float32List eyePosition =
+          await platform.invokeMethod('getEyeCoordinary');
+      debugPrint("Flutter: eyePosition[${eyePosition[0]}][${eyePosition[1]}]");
+    } on PlatformException catch (e) {
+      debugPrint("ERROR: $e");
+    }
   }
 
   @override
   void initState() {
     _pdfController = PdfControllerPinch(
         document: PdfDocument.openFile(targetFile), initialPage: _initialPage);
-    _startListener();
+    platform.invokeMethod('initGaze');
+    // _startListener();
     super.initState();
   }
 
   @override
   void dispose() {
     _pdfController.dispose();
-    _cancelListener();
+    platform.invokeMethod('releaseGaze');
+    // _cancelListener();
     super.dispose();
   }
 
