@@ -43,28 +43,8 @@ class _FileListPageState extends State<FileListPage> {
           actions: [PreferenceButton()],
         ),
         body: Container(
-          child: Column(
-            children: [
-              Expanded(
-                  child: Container(
-                child: ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    itemCount: fileList.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      print('fileList[index].path: ${fileList[index].path}');
-                      return Container(
-                        height: 50,
-                        child: TextButton(
-                          onPressed: () {},
-                          child: Text('${fileList[index].uri.toString()}'),
-                        ),
-                      );
-                    }),
-              )),
-              Container(
-                child: SelectFileButton(),
-              ),
-            ],
+          child: Center(
+            child: SizedBox(height: 120, child: SelectFileButton()),
           ),
         ));
   }

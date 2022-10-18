@@ -7,7 +7,7 @@ class SelectFileButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton(
+    return ElevatedButton(
         onPressed: () async {
           FilePickerResult? result = await FilePicker.platform.pickFiles(
             type: FileType.custom,
@@ -24,11 +24,11 @@ class SelectFileButton extends StatelessWidget {
             }
           }
         },
-        child: Row(
+        child: Column(
           children: [
             Icon(
-              Icons.add,
-              size: 50,
+              Icons.file_open,
+              size: 100,
             ),
             Text("Select new file..."),
           ],
