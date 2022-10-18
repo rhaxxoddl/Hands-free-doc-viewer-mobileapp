@@ -55,7 +55,7 @@ class _PdfViewPageState extends State<PdfViewPage> {
   @override
   void initState() {
     deviceBottomRange = [deviceHeight * 0.8, deviceHeight];
-    deviceTopRange = [0.0, deviceHeight * 0.05];
+    deviceTopRange = [0.0, AppBar().preferredSize.height];
     _pdfController = PdfControllerPinch(
         document: PdfDocument.openFile(targetFile), initialPage: _initialPage);
     platform.invokeMethod('initGaze');
@@ -76,6 +76,10 @@ class _PdfViewPageState extends State<PdfViewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: Icon(Icons.article),
+        title: Text(targetFile),
+      ),
       body: FutureBuilder(
           future: PdfDocument.openFile(targetFile),
           builder: (_, pdfData) {
