@@ -45,9 +45,14 @@ public class MainActivity extends FlutterActivity {
     // Method Channel===========================================================
     private static final String mChannel = "com.example.document_viewer_m_app/gazeTracker";
     private MethodChannel channel;
-    protected float[] mEyeCoordinary = {0, 0};
+    protected float[] mEyeCoordinary = {-1, -1};
 
-    public float[] getEyeCoordinary() { return mEyeCoordinary; }
+    public float[] getEyeCoordinary() {
+        float[] mEyeCoordinaryTemp = {mEyeCoordinary[0], mEyeCoordinary[1]};
+        mEyeCoordinary[0] = -1;
+        mEyeCoordinary[1] = -1;
+        return mEyeCoordinaryTemp;
+    }
 
     @Override
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
@@ -109,14 +114,10 @@ public class MainActivity extends FlutterActivity {
 
         @Override
         public void onGaze(GazeInfo gazeInfo) {
-            System.out.println(gazeInfo.getClass().getName());
-            System.out.println(gazeInfo == null);
-            System.out.println(gazeInfo.screenState);
             if (gazeInfo.screenState == ScreenState.INSIDE_OF_SCREEN){
-                Log.i("Eye coordinary", "x[" + gazeInfo.x + " ] y[" + gazeInfo.y+ "]");
+                Log.d("Eye coordinary", "x[" + gazeInfo.x + " ] y[" + gazeInfo.y+ "]");
                 mEyeCoordinary[0] = gazeInfo.x;
                 mEyeCoordinary[1] = gazeInfo.y;
-                Log.d("GazeCallback", "Success mEyeCoordinary");
             }
         }
     };
