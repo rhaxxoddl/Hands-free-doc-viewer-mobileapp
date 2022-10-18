@@ -39,11 +39,11 @@ class _PdfViewPageState extends State<PdfViewPage> {
         if (eyePosition[1] >= deviceBottomRange[0] &&
             eyePosition[1] <= deviceBottomRange[1])
           _pdfController.nextPage(
-              duration: Duration(milliseconds: 100), curve: Curves.easeIn);
+              duration: Duration(milliseconds: 400), curve: Curves.easeIn);
         else if (eyePosition[1] >= deviceTopRange[0] &&
             eyePosition[1] <= deviceTopRange[1])
           _pdfController.previousPage(
-              duration: Duration(milliseconds: 100), curve: Curves.easeOut);
+              duration: Duration(milliseconds: 400), curve: Curves.easeOut);
         else
           debugPrint("_checkEyePosition: Invalid eye position");
       }
@@ -55,11 +55,11 @@ class _PdfViewPageState extends State<PdfViewPage> {
   @override
   void initState() {
     deviceBottomRange = [deviceHeight * 0.8, deviceHeight];
-    deviceTopRange = [0.0, deviceHeight * 0.2];
+    deviceTopRange = [0.0, deviceHeight * 0.05];
     _pdfController = PdfControllerPinch(
         document: PdfDocument.openFile(targetFile), initialPage: _initialPage);
     platform.invokeMethod('initGaze');
-    _timer = Timer.periodic(Duration(milliseconds: 250), (timer) {
+    _timer = Timer.periodic(Duration(milliseconds: 1000), (timer) {
       _checkEyePosition();
     });
     super.initState();
