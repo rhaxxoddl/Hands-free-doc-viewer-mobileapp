@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import '../page/pdfViewPage.dart';
+import '../page/pdf_view_page.dart';
 
 class SelectFileButton extends StatelessWidget {
   const SelectFileButton({Key? key}) : super(key: key);

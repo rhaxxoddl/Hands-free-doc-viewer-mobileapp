@@ -14,10 +14,12 @@ class PdfViewPage extends StatefulWidget {
 }
 
 class _PdfViewPageState extends State<PdfViewPage> {
+  static const int PAGE_SCROLL_SPEED = 400;
+  static const int INITIAL_PAGE = 1;
+
   String targetFile;
   late PdfControllerPinch _pdfController;
-  static const int _initialPage = 2;
-  int _actualPageNumber = _initialPage;
+  int _actualPageNumber = INITIAL_PAGE;
   int _allPageCount = 0;
   bool isSampleDoc = true;
   _PdfViewPageState(this.targetFile);
@@ -37,15 +39,20 @@ class _PdfViewPageState extends State<PdfViewPage> {
           await platform.invokeMethod('getEyeCoordinary');
       if (eyePosition[0] >= 0 && eyePosition[1] >= 0) {
         if (eyePosition[1] >= deviceBottomRange[0] &&
-            eyePosition[1] <= deviceBottomRange[1])
+            eyePosition[1] <= deviceBottomRange[1]) {
           _pdfController.nextPage(
-              duration: Duration(milliseconds: 400), curve: Curves.easeIn);
-        else if (eyePosition[1] >= deviceTopRange[0] &&
-            eyePosition[1] <= deviceTopRange[1])
-          _pdfController.previousPage(
-              duration: Duration(milliseconds: 400), curve: Curves.easeOut);
-        else
-          debugPrint("_checkEyePosition: Invalid eye position");
+              duration: Duration(milliseconds: PAGE_SCROLL_SPEED),
+              curve: Curves.easeIn);
+        } else {
+          if (eyePosition[1] >= deviceTopRange[0] &&
+              eyePosition[1] <= deviceTopRange[1]) {
+            _pdfController.previousPage(
+                duration: Duration(milliseconds: PAGE_SCROLL_SPEED),
+                curve: Curves.easeOut);
+          } else {
+            debugPrint("_checkEyePosition: Invalid eye position");
+          }
+        }
       }
     } on PlatformException catch (e) {
       debugPrint("ERROR: $e");
@@ -57,7 +64,7 @@ class _PdfViewPageState extends State<PdfViewPage> {
     deviceBottomRange = [deviceHeight * 0.8, deviceHeight];
     deviceTopRange = [0.0, AppBar().preferredSize.height];
     _pdfController = PdfControllerPinch(
-        document: PdfDocument.openFile(targetFile), initialPage: _initialPage);
+        document: PdfDocument.openFile(targetFile), initialPage: INITIAL_PAGE);
     platform.invokeMethod('initGaze');
     _timer = Timer.periodic(Duration(milliseconds: 1000), (timer) {
       _checkEyePosition();
@@ -67,9 +74,9 @@ class _PdfViewPageState extends State<PdfViewPage> {
 
   @override
   void dispose() {
-    _pdfController.dispose();
+    _timer.cancel();
     platform.invokeMethod('releaseGaze');
-    _timer?.cancel();
+    _pdfController.dispose();
     super.dispose();
   }
 

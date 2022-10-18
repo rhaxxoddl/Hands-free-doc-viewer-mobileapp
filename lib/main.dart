@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'constants.dart';
-import 'components/StartButton.dart';
-import 'package:document_viewer_m_app/function/GetPermissionFunc.dart';
+import 'components/startButton.dart';
+import 'package:document_viewer_m_app/function/getPermissionFunc.dart';
 
 void main() {
   runApp(DocWithEyes());
