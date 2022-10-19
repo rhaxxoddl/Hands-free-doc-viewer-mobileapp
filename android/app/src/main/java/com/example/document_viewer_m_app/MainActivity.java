@@ -1,24 +1,12 @@
 package com.example.document_viewer_m_app;
 
-import camp.visual.gazetracker.callback.GazeTrackerCallback;
 import camp.visual.gazetracker.constant.UserStatusOption;
 import camp.visual.gazetracker.gaze.GazeInfo;
 import camp.visual.gazetracker.state.ScreenState;
-import camp.visual.libgaze.calibration.CalibrationHelper;
-import camp.visual.libgaze.camera.DeviceMeta;
 import io.flutter.embedding.android.FlutterActivity;
 
-import android.app.Activity;
-import android.graphics.Point;
-import android.hardware.camera2.params.MeteringRectangle;
-import android.os.Bundle;
-
 import io.flutter.embedding.engine.FlutterEngine;
-import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
-import java.util.Map;
-import java.util.Objects;
 
 // SeeSo Imports
 import camp.visual.gazetracker.GazeTracker;
@@ -26,7 +14,6 @@ import camp.visual.gazetracker.callback.GazeCallback;
 import camp.visual.gazetracker.callback.InitializationCallback;
 import camp.visual.gazetracker.constant.InitializationErrorType;
 import camp.visual.gazetracker.filter.OneEuroFilterManager;
-import camp.visual.gazetracker.device.CameraPosition;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
 // Android Imports
@@ -35,7 +22,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.Display;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -45,12 +31,12 @@ public class MainActivity extends FlutterActivity {
     // Method Channel===========================================================
     private static final String mChannel = "com.example.document_viewer_m_app/gazeTracker";
     private MethodChannel channel;
-    protected float[] mEyeCoordinary = {-1, -1};
+    protected float[] mEyePosition = {-1, -1};
 
-    public float[] getEyeCoordinary() {
-        float[] mEyeCoordinaryTemp = {mEyeCoordinary[0], mEyeCoordinary[1]};
-        mEyeCoordinary[0] = -1;
-        mEyeCoordinary[1] = -1;
+    public float[] getEyePosition() {
+        float[] mEyeCoordinaryTemp = {mEyePosition[0], mEyePosition[1]};
+        mEyePosition[0] = -1;
+        mEyePosition[1] = -1;
         return mEyeCoordinaryTemp;
     }
 
@@ -68,8 +54,8 @@ public class MainActivity extends FlutterActivity {
                     else if (call.method.equals("releaseGaze")) {
                         releaseGaze();
                     }
-                    else if (call.method.equals("getEyeCoordinary")) {
-                        result.success(getEyeCoordinary());
+                    else if (call.method.equals("getEyePosition")) {
+                        result.success(getEyePosition());
                     }
                     else {
                         result.notImplemented();
@@ -116,8 +102,8 @@ public class MainActivity extends FlutterActivity {
         public void onGaze(GazeInfo gazeInfo) {
             if (gazeInfo.screenState == ScreenState.INSIDE_OF_SCREEN){
                 Log.d("Eye coordinary", "x[" + gazeInfo.x + " ] y[" + gazeInfo.y+ "]");
-                mEyeCoordinary[0] = gazeInfo.x;
-                mEyeCoordinary[1] = gazeInfo.y;
+                mEyePosition[0] = gazeInfo.x;
+                mEyePosition[1] = gazeInfo.y;
             }
         }
     };

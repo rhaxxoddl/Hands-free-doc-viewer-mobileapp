@@ -4,10 +4,10 @@ import 'components/startButton.dart';
 import 'package:document_viewer_m_app/function/getPermissionFunc.dart';
 
 void main() {
-  runApp(DocWithEyes());
+  runApp(DocEye());
 }
 
-class DocWithEyes extends StatelessWidget {
+class DocEye extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Future<bool> statusPermission = getPermission();
@@ -19,21 +19,31 @@ class DocWithEyes extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(
           title: Text(
-            'DocWithEyes',
+            'DocEye',
             style: tTitleTextStyle,
           ),
           backgroundColor: cBackgroundColor,
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              Container(
-                child: StartButton(),
-                padding: EdgeInsets.all(40),
+        body: Column(
+          children: [
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
+                    child: Image.asset(
+                      'assets/images/exampleImage.png',
+                      height: 500,
+                    ),
+                  ),
+                  Container(
+                    child: StartButton(),
+                    padding: EdgeInsets.all(10),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

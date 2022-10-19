@@ -36,7 +36,7 @@ class _PdfViewPageState extends State<PdfViewPage> {
   Future<void> _checkEyePosition() async {
     try {
       final Float32List eyePosition =
-          await platform.invokeMethod('getEyeCoordinary');
+          await platform.invokeMethod('getEyePosition');
       if (eyePosition[0] >= 0 && eyePosition[1] >= 0) {
         if (eyePosition[1] >= deviceBottomRange[0] &&
             eyePosition[1] <= deviceBottomRange[1]) {
