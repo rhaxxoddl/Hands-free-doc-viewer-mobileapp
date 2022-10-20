@@ -69,22 +69,8 @@ class _PdfViewPageState extends State<PdfViewPage> {
   @override
   void initState() {
     super.initState();
-    // _preferenceProvider = Provider.of<PreferenceProvider>(context);
     deviceBottomRange = [deviceHeight * 0.8, deviceHeight];
     deviceTopRange = [0.0, AppBar().preferredSize.height];
-    // _pdfController = PdfControllerPinch(
-    //     document: PdfDocument.openFile(targetFile), initialPage: INITIAL_PAGE);
-    // platform.invokeMethod('initGaze');
-    // try {
-    //   _timer = Timer.periodic(
-    //       Duration(milliseconds: _preferenceProvider.EYE_TRACKING_DELAY),
-    //       (timer) {
-    //     // _checkEyePosition();
-    //   });
-    // } catch (e) {
-    //   debugPrint("ERROR: pdf_view_page\n ${e}");
-    //   exit(255);
-    // }
   }
 
   @override
@@ -119,7 +105,7 @@ class _PdfViewPageState extends State<PdfViewPage> {
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Icons.article),
-        title: Text(targetFile),
+        title: Text(targetFile.substring(targetFile.lastIndexOf('/') + 1)),
       ),
       body: FutureBuilder(
           future: PdfDocument.openFile(targetFile),
