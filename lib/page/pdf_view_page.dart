@@ -1,9 +1,12 @@
+import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:document_viewer_m_app/provider/preference_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:native_pdf_view/native_pdf_view.dart';
 import 'dart:async';
+import 'package:provider/provider.dart';
 
 class PdfViewPage extends StatefulWidget {
   String targetFilePath;
@@ -14,7 +17,6 @@ class PdfViewPage extends StatefulWidget {
 }
 
 class _PdfViewPageState extends State<PdfViewPage> {
-  static const int PAGE_SCROLL_SPEED = 400;
   static const int INITIAL_PAGE = 1;
 
   String targetFile;
@@ -30,6 +32,7 @@ class _PdfViewPageState extends State<PdfViewPage> {
   late List<double> deviceBottomRange;
   late List<double> deviceTopRange;
   late Timer _timer;
+  late final PreferenceProvider _preferenceProvider;
 
   static const platform =
       MethodChannel('com.example.document_viewer_m_app/gazeTracker');
@@ -41,14 +44,18 @@ class _PdfViewPageState extends State<PdfViewPage> {
         if (eyePosition[1] >= deviceBottomRange[0] &&
             eyePosition[1] <= deviceBottomRange[1]) {
           _pdfController.nextPage(
-              duration: Duration(milliseconds: PAGE_SCROLL_SPEED),
+              duration:
+                  Duration(milliseconds: _preferenceProvider.PAGE_SCROLL_SPEED),
               curve: Curves.easeIn);
+          debugPrint("next page: [${eyePosition}]");
         } else {
           if (eyePosition[1] >= deviceTopRange[0] &&
               eyePosition[1] <= deviceTopRange[1]) {
             _pdfController.previousPage(
-                duration: Duration(milliseconds: PAGE_SCROLL_SPEED),
+                duration: Duration(
+                    milliseconds: _preferenceProvider.PAGE_SCROLL_SPEED),
                 curve: Curves.easeOut);
+            debugPrint("previous page: [${eyePosition}]");
           } else {
             debugPrint("_checkEyePosition: Invalid eye position");
           }
@@ -61,15 +68,42 @@ class _PdfViewPageState extends State<PdfViewPage> {
 
   @override
   void initState() {
+    super.initState();
+    // _preferenceProvider = Provider.of<PreferenceProvider>(context);
     deviceBottomRange = [deviceHeight * 0.8, deviceHeight];
     deviceTopRange = [0.0, AppBar().preferredSize.height];
+    // _pdfController = PdfControllerPinch(
+    //     document: PdfDocument.openFile(targetFile), initialPage: INITIAL_PAGE);
+    // platform.invokeMethod('initGaze');
+    // try {
+    //   _timer = Timer.periodic(
+    //       Duration(milliseconds: _preferenceProvider.EYE_TRACKING_DELAY),
+    //       (timer) {
+    //     // _checkEyePosition();
+    //   });
+    // } catch (e) {
+    //   debugPrint("ERROR: pdf_view_page\n ${e}");
+    //   exit(255);
+    // }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _preferenceProvider = Provider.of<PreferenceProvider>(context);
     _pdfController = PdfControllerPinch(
         document: PdfDocument.openFile(targetFile), initialPage: INITIAL_PAGE);
     platform.invokeMethod('initGaze');
-    _timer = Timer.periodic(Duration(milliseconds: 1000), (timer) {
-      _checkEyePosition();
-    });
-    super.initState();
+    try {
+      _timer = Timer.periodic(
+          Duration(milliseconds: _preferenceProvider.EYE_TRACKING_DELAY),
+          (timer) {
+        _checkEyePosition();
+      });
+    } catch (e) {
+      debugPrint("ERROR: pdf_view_page\n ${e}");
+      exit(255);
+    }
   }
 
   @override

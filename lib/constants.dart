@@ -6,3 +6,6 @@ const Color cPointColor = Color(0xFF002F9C);
 
 const TextStyle tTitleTextStyle =
     TextStyle(color: cPrimaryColor, fontWeight: FontWeight.bold);
+
+const TextStyle tPreferenceTextStyle =
+    TextStyle(color: cPrimaryColor, fontWeight: FontWeight.bold);

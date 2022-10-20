@@ -2,9 +2,17 @@ import 'package:flutter/material.dart';
 import 'constants.dart';
 import 'components/startButton.dart';
 import 'package:document_viewer_m_app/function/getPermissionFunc.dart';
+import 'provider/preference_provider.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(DocEye());
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider<PreferenceProvider>(
+          create: (_) => PreferenceProvider())
+    ],
+    child: DocEye(),
+  ));
 }
 
 class DocEye extends StatelessWidget {
@@ -16,34 +24,31 @@ class DocEye extends StatelessWidget {
         primaryColor: cPrimaryColor,
         scaffoldBackgroundColor: cBackgroundColor,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'DocEye',
-            style: tTitleTextStyle,
-          ),
-          backgroundColor: cBackgroundColor,
-        ),
-        body: Column(
-          children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    child: Image.asset(
-                      'assets/images/exampleImage.png',
-                      height: 500,
-                    ),
-                  ),
-                  Container(
-                    child: StartButton(),
-                    padding: EdgeInsets.all(10),
-                  ),
-                ],
-              ),
+      home: ChangeNotifierProvider(
+        create: (_) => PreferenceProvider(),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              'DocEye',
+              style: tTitleTextStyle,
             ),
-          ],
+            backgroundColor: cBackgroundColor,
+          ),
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Container(
+                child: Image.asset(
+                  'assets/images/exampleImage.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
+              Container(
+                child: StartButton(),
+                padding: EdgeInsets.all(10),
+              ),
+            ],
+          ),
         ),
       ),
     );

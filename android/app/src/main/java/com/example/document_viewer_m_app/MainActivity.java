@@ -101,7 +101,7 @@ public class MainActivity extends FlutterActivity {
         @Override
         public void onGaze(GazeInfo gazeInfo) {
             if (gazeInfo.screenState == ScreenState.INSIDE_OF_SCREEN){
-                Log.d("Eye coordinary", "x[" + gazeInfo.x + " ] y[" + gazeInfo.y+ "]");
+//                Log.d("Eye coordinary", "x[" + gazeInfo.x + " ] y[" + gazeInfo.y+ "]");
                 mEyePosition[0] = gazeInfo.x;
                 mEyePosition[1] = gazeInfo.y;
             }
