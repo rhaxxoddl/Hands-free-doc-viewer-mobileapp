@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:native_pdf_view/native_pdf_view.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
+import '../components/preferenceButton.dart';
 
 class PdfViewPage extends StatefulWidget {
   String targetFilePath;
@@ -40,6 +41,8 @@ class _PdfViewPageState extends State<PdfViewPage> {
     try {
       final Float32List eyePosition =
           await platform.invokeMethod('getEyePosition');
+      debugPrint(
+          "eye tracking delay time: ${_preferenceProvider.EYE_TRACKING_DELAY}");
       if (eyePosition[0] >= 0 && eyePosition[1] >= 0) {
         if (eyePosition[1] >= deviceBottomRange[0] &&
             eyePosition[1] <= deviceBottomRange[1]) {
@@ -106,6 +109,8 @@ class _PdfViewPageState extends State<PdfViewPage> {
       appBar: AppBar(
         leading: Icon(Icons.article),
         title: Text(targetFile.substring(targetFile.lastIndexOf('/') + 1)),
+        titleSpacing: 0,
+        actions: [PreferenceButton()],
       ),
       body: FutureBuilder(
           future: PdfDocument.openFile(targetFile),
